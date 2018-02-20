@@ -1,45 +1,70 @@
-import sys, pygame
+import sys
+import pygame
+import random
 from core import *
-from colors import *
+from faller import *
 
-#game setup
-g = game()
+# game objects and settings
+g = game(10, 20, 25)
 g.newBlocks()
-done = False
+f = Faller(g)
+f.newBlocks(random.choice(minos))
+FALLEVENT = pygame.USEREVENT+1
 
-#size setup
-height = (g.w+5)*g.rows-5
-width = (g.w+5)*g.cols-5
-size = (width, height)
-
-#pygame config
+# pygame setup
 pygame.init()
-g.screen = pygame.display.set_mode(size)
+pygame.time.set_timer(FALLEVENT, 500)
 pygame.display.set_caption("GT")
 clock = pygame.time.Clock()
 
-#main loop
-while not done:
-    #events handler
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            done = True
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                done = True
-            elif event.key == pygame.K_LEFT:
-                print('left()')
-            elif event.key == pygame.K_RIGHT:
-                print('right()')
-            elif event.key == pygame.K_DOWN:
-                print('down()')
+# falling event handlers
+def fall(f):
+    if (f.canMove(0, -1)):
+        f.move(0, -1)
+    else:
+        f.lockToGrid()
+        f.newBlocks(random.choice(minos))
+        if (not f.canMove(0, 0)):
+            g.finished = True
 
-    #graphics
-    g.screen.fill((GRAY))
-    drawGrid(g)
+# key event handler
+def keyPressed(ekey):
+    if ekey == pygame.K_ESCAPE:
+        g.finished = True
+    elif ekey == pygame.K_LEFT:
+        if(f.canMove(-1, 0)):
+            f.move(-1, 0)
+    elif ekey == pygame.K_RIGHT:
+        if(f.canMove(1, 0)):
+            f.move(1, 0)
+    elif ekey == pygame.K_DOWN:
+        if(f.canMove(0, -1)):
+            f.move(0, -1)
+    elif ekey == pygame.K_UP:
+        if(f.canRotate()):
+            f.rotate()
+    elif ekey == pygame.K_SPACE:
+        while (f.canMove (0,-1)):
+            f.move(0, -1)
+
+# main loop
+while not g.finished:
+    # checks
+    g.checkLines()
+
+    # event handler
+    for event in pygame.event.get():
+        if event.type == FALLEVENT:
+            fall(f)
+        if event.type == pygame.QUIT:
+            g.finished = True
+        elif event.type == pygame.KEYDOWN:
+            keyPressed(event.key)
+
+    # render
+    g.screen.fill((WHITE))
+    drawGrid(g, f)
     pygame.display.flip()
 
-    #framerate?
-    clock.tick(60)
-
+# exit game
 pygame.quit()
