@@ -72,6 +72,6 @@ class block:
             return False
         if self.j < 0 or self.j >= self.go.rows:
             return False
-        if not self.go.blocks[self.i][self.j].empty:
+        if not self.go.blocks[int(self.i)][int(self.j)].empty:
             return False
         return True

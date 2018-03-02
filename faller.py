@@ -35,7 +35,7 @@ class Faller:
                 swapBlock(a, b)
 
         for j in range(self.size):
-            for i  in range(math.floor(self.size/2)):
+            for i  in range(int(self.size/2)):
                 a = self.blocks[i][j]
                 b = self.blocks[(self.size-1)-i][j]
                 swapBlock(a, b)
@@ -52,7 +52,7 @@ class Faller:
                      return False
 
         for j in range(self.size):
-            for i  in range(math.floor(self.size/2)):
+            for i  in range(int(self.size/2)):
                 a = self.blocks[i][j]
                 b = self.blocks[(self.size-1)-i*2][j]
                 if not (a.empty or b.validBlock()):
@@ -69,7 +69,7 @@ class Faller:
                 if (b.i+i < 0 or b.i+i >= self.go.cols or b.j + j < 0) and not b.empty:
                     return False
                 if not b.empty and b.j+j < self.go.rows:
-                    if not self.go.blocks[b.i + i][b.j+j].empty:
+                    if not self.go.blocks[int(b.i + i)][int(b.j+j)].empty:
                         return False
 
         return True
@@ -89,5 +89,5 @@ class Faller:
             for row in range (self.size):
                 b = self.blocks[col][row]
                 if not b.empty:
-                    a = self.go.blocks[b.i][b.j]
+                    a = self.go.blocks[int(b.i)][int(b.j)]
                     swapBlock(a, b)
